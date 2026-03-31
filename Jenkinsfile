@@ -1,38 +1,28 @@
 pipeline {
     agent any
 
+    // Memberitahu Jenkins lokasi Flutter dan Android SDK milikmu
     environment {
-        JAVA_HOME = "/usr/lib/jvm/java-17-openjdk-amd64"
-        ANDROID_HOME = "/var/lib/jenkins/Android/Sdk"
-        ANDROID_SDK_ROOT = "/var/lib/jenkins/Android/Sdk"
-        PATH = "${env.PATH}:${JAVA_HOME}/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/cmdline-tools/latest/bin"
+        PATH = "/home/redrigo/flutter/bin:$PATH"
+        ANDROID_HOME = "/home/redrigo/Android/Sdk"
     }
 
     stages {
-
-        stage('Build Flutter APK') {
+        stage('Build APK') {
             steps {
                 dir('register_system/backend/flutter_app') {
-
                     sh 'flutter clean'
                     sh 'flutter pub get'
                     sh 'flutter build apk --release'
-
                 }
             }
         }
-
+        
+        // Opsional: Menyimpan hasil APK agar bisa di-download langsung dari Jenkins
         stage('Archive APK') {
             steps {
-                archiveArtifacts artifacts: 'register_system/backend/flutter_app/build/app/outputs/flutter-apk/*.apk'
+                archiveArtifacts artifacts: 'register_system/backend/flutter_app/build/app/outputs/flutter-apk/app-release.apk', allowEmptyArchive: true
             }
-        }
-
-    }
-
-    post {
-        success {
-            echo 'Flutter APK build success'
         }
     }
 }
